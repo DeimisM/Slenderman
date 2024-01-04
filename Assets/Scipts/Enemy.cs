@@ -11,6 +11,7 @@ public class Enemy : MonoBehaviour
     public float speed;
     public float viewDistance;
     public float wanderDistance;
+    public Animator animator;
 
     Rigidbody rb;
     NavMeshAgent agent;
@@ -19,17 +20,42 @@ public class Enemy : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         agent = GetComponent<NavMeshAgent>();
-        agent.speed = speed;
     }
 
     private void Update()
     {
+        agent.speed = speed;
+        var currentSpeed = agent.velocity.magnitude;
+        var distance = Vector3.Distance(transform.position, target.position);
+
+        if (distance < 1.5f)
+        {
+            //jumpscare
+            speed = 0;
+
+            animator.Play("Scream");
+        }
+
+        else if (currentSpeed == 0)
+        {
+            animator.Play("Idle");
+        }
+
+        else if (currentSpeed < 4)
+        {
+            animator.Play("Walk");
+        }
+
+        else
+        {
+            animator.Play("Run");
+        }
+
         //transform.LookAt(target);
         ////transform.position += transform.forward * speed * Time.deltaTime;
         //rb.velocity = transform.forward * speed;
 
 
-        var distance = Vector3.Distance(transform.position, target.position);
 
         if (distance < viewDistance)
         {
@@ -47,9 +73,5 @@ public class Enemy : MonoBehaviour
             }
         }
 
-        if (distance < 1f)
-        {
-            //jumpscare
-        }
     }
 }
